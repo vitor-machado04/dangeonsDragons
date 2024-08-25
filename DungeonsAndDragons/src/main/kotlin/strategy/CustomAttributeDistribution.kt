@@ -14,7 +14,7 @@ class CustomAttributeDistribution : AttributeDistribution {
         attributes.forEach { attributeName ->
             var score = 8
             var currentCost = calculateCost(score)
-            remainingPoints -= currentCost // vitor - subtraí do total de pontos restantes
+            remainingPoints -= currentCost // vitor - Subtrai do total de pontos restantes
 
             while (true) {
                 println("-------------------------------------")
@@ -27,8 +27,8 @@ class CustomAttributeDistribution : AttributeDistribution {
                     continue
                 }
 
-                val newCost = calculateCost(input) // vitor - nova pontuação
-                val costDifference = newCost - currentCost // vitor - diferença do custo da pont. atual e a nova
+                val newCost = calculateCost(input)
+                val costDifference = newCost - currentCost
 
                 if (input > score && remainingPoints < costDifference) {
                     println("Erro: Não há pontos suficientes para atribuir este valor. Pontos restantes: $remainingPoints")
@@ -44,7 +44,52 @@ class CustomAttributeDistribution : AttributeDistribution {
                     println("Erro: Valor inválido ou insuficiente de pontos. Tente novamente.")
                 }
             }
-            scores[attributeName] = score // vitor - valores salvos no mapa
+            scores[attributeName] = score // vitor - Salva os valores no mapa
+        }
+
+        while (remainingPoints > 0) {
+            println("\nAinda há $remainingPoints pontos sobrando.")
+            println("Deseja alterar algum atributo para usar os pontos restantes? (sim/não)")
+            val continueInput = readLine()?.trim()?.lowercase()
+
+            if (continueInput == "não" || continueInput == "n") {
+                println("Erro: Não é possível finalizar a criação do personagem com pontos sobrando.")
+            } else if (continueInput == "sim" || continueInput == "s") {
+                attributes.forEach { attributeName ->
+                    println("$attributeName: ${scores[attributeName]}")
+                }
+                println("Digite o nome do atributo que você quer alterar:")
+                val attributeToChange = readLine()?.trim()
+
+                if (attributeToChange != null && scores.containsKey(attributeToChange)) {
+                    val currentScore = scores[attributeToChange] ?: 8
+                    val currentCost = calculateCost(currentScore)
+
+                    println("Valor atual de $attributeToChange é $currentScore.")
+                    println("Digite o novo valor (mínimo 8, máximo 15):")
+                    val newScore = readLine()?.toIntOrNull()
+
+                    if (newScore != null && newScore in 8..15) {
+                        val newCost = calculateCost(newScore)
+                        val costDifference = newCost - currentCost
+
+                        if (newScore > currentScore && remainingPoints < costDifference) {
+                            println("Erro: Não há pontos suficientes para atribuir este valor.")
+                        }
+                        else {
+                            remainingPoints -= costDifference
+                            scores[attributeToChange] = newScore
+                            println("Pontos restantes: $remainingPoints")
+                        }
+                    }
+                    else {
+                        println("Erro: Valor inválido. Deve ser entre 8 e 15.")
+                    }
+                }
+                else {
+                    println("Erro: Atributo não encontrado.")
+                }
+            }
         }
 
         return Abilities(
@@ -69,4 +114,3 @@ class CustomAttributeDistribution : AttributeDistribution {
         else -> throw IllegalArgumentException("Score fora do intervalo permitido")
     }
 }
-
