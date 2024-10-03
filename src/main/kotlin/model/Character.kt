@@ -6,10 +6,9 @@ class Character(
     val name: String,
     val race: Race,
     val charClass: CharClass,
-    distributionStrategy: AttributeDistribution
+    val abilities: Abilities
 ) {
     var level: Int = 1
-    val abilities: Abilities = distributionStrategy.distributeAttributes(27)
     val hitPoints: Int = calculateInitialHitPoints()
 
     private fun calculateInitialHitPoints(): Int {
